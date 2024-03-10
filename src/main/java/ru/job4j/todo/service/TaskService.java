@@ -45,4 +45,8 @@ public class TaskService {
     public Collection<Task> findAllNew() {
         return taskStore.findAllNew();
     }
+
+    public boolean makeDone(int id) {
+        return taskStore.makeDone(id);
+    }
 }

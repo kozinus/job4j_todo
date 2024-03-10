@@ -19,19 +19,6 @@ public class TaskController {
         return "tasks/list";
     }
 
-    @GetMapping("/makedone/{id}")
-    public String makeDone(Model model, @PathVariable int id) {
-        var taskOptional = taskService.findById(id);
-        if (taskOptional.isEmpty()) {
-            model.addAttribute("message", "Задача с указанным идентификатором не найдена");
-            return "errors/404";
-        }
-        Task task = taskOptional.get();
-        task.setDone(true);
-        taskService.update(task);
-        return getAll(model);
-    }
-
     @GetMapping("/done")
     public String getDone(Model model) {
         model.addAttribute("tasks", taskService.findAllDone());
@@ -64,6 +51,12 @@ public class TaskController {
         }
         model.addAttribute("task", taskOptional.get());
         return "tasks/one";
+    }
+
+    @GetMapping("/makedone/{id}")
+    public String makeDone(Model model, @PathVariable int id) {
+        taskService.makeDone(id);
+        return getAll(model);
     }
 
     @GetMapping("/edit/{id}")

@@ -51,8 +51,25 @@ public class TaskStore {
         boolean flag = false;
         try {
             session.beginTransaction();
-            flag = session.createQuery("delete Task where id = :Id")
+            flag = session.createQuery("delete Task where id = :Id", Task.class)
                     .setParameter("Id", id).executeUpdate() > 0;
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return flag;
+    }
+
+    public boolean makeDone(int id) {
+        Session session = sf.openSession();
+        boolean flag = false;
+        try {
+            session.beginTransaction();
+            flag = session.createQuery("update Task set done = true where id = :Id")
+                    .setParameter("Id", id)
+                    .executeUpdate() > 0;
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
