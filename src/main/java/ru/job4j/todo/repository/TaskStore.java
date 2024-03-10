@@ -51,7 +51,7 @@ public class TaskStore {
         boolean flag = false;
         try {
             session.beginTransaction();
-            flag = session.createQuery("delete Task where id = :Id", Task.class)
+            flag = session.createQuery("delete Task where id = :Id")
                     .setParameter("Id", id).executeUpdate() > 0;
             session.getTransaction().commit();
         } catch (Exception e) {
