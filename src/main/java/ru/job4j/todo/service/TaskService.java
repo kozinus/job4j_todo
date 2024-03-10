@@ -37,4 +37,12 @@ public class TaskService {
     public Collection<Task> findAll() {
         return taskStore.findAll();
     }
+
+    public Collection<Task> findAllDone() {
+        return taskStore.findAllDone();
+    }
+
+    public Collection<Task> findAllNew() {
+        return taskStore.findAllNew();
+    }
 }

@@ -11,17 +11,18 @@ import java.time.LocalDateTime;
 @Setter
 @RequiredArgsConstructor
 @NoArgsConstructor
-@Data
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @NonNull
+    private String title;
+
+    @NonNull
     private String description;
 
     private LocalDateTime created = LocalDateTime.now().withSecond(0).withNano(0);
 
-    @NonNull
-    private boolean done;
+    private boolean done = false;
 }

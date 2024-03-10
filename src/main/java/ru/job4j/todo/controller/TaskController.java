@@ -7,10 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.service.TaskService;
 
-import java.time.LocalDateTime;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 @Controller
 @RequestMapping("/tasks")
 @AllArgsConstructor
@@ -23,19 +19,28 @@ public class TaskController {
         return "tasks/list";
     }
 
+    @GetMapping("/makedone/{id}")
+    public String makeDone(Model model, @PathVariable int id) {
+        var taskOptional = taskService.findById(id);
+        if (taskOptional.isEmpty()) {
+            model.addAttribute("message", "Задача с указанным идентификатором не найдена");
+            return "errors/404";
+        }
+        Task task = taskOptional.get();
+        task.setDone(true);
+        taskService.update(task);
+        return getAll(model);
+    }
+
     @GetMapping("/done")
     public String getDone(Model model) {
-        model.addAttribute("tasks", taskService.findAll().stream().filter(Task::isDone).collect(Collectors.toList()));
+        model.addAttribute("tasks", taskService.findAllDone());
         return "tasks/list";
     }
 
     @GetMapping("/new")
     public String getNew(Model model) {
-        LocalDateTime timer = LocalDateTime.now().minusMinutes(3);
-        Predicate<Task> newFilter = x -> {
-            return x.getCreated().isAfter(timer);
-        };
-        model.addAttribute("tasks", taskService.findAll().stream().filter(newFilter).collect(Collectors.toList()));
+        model.addAttribute("tasks", taskService.findAllNew());
         return "tasks/list";
     }
 
@@ -46,13 +51,8 @@ public class TaskController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute Task task, Model model) {
-        try {
-            taskService.save(task);
-            return "redirect:/tasks";
-        } catch (Exception e) {
-            model.addAttribute("message", e.getMessage());
-            return "errors/404";
-        }
+        taskService.save(task);
+        return "redirect:/tasks";
     }
 
     @GetMapping("/{id}")
@@ -66,19 +66,25 @@ public class TaskController {
         return "tasks/one";
     }
 
-    @PostMapping("/update")
-    public String update(@ModelAttribute Task task, Model model) {
-        try {
-            var isUpdated = taskService.update(task);
-            if (!isUpdated) {
-                model.addAttribute("message", "Задача с указанным идентификатором не найдена");
-                return "errors/404";
-            }
-            return "redirect:/tasks";
-        } catch (Exception exception) {
-            model.addAttribute("message", exception.getMessage());
+    @GetMapping("/edit/{id}")
+    public String getByIdToEdit(Model model, @PathVariable int id) {
+        var taskOptional = taskService.findById(id);
+        if (taskOptional.isEmpty()) {
+            model.addAttribute("message", "Задача с указанным идентификатором не найдена");
             return "errors/404";
         }
+        model.addAttribute("task", taskOptional.get());
+        return "tasks/edit";
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute Task task, Model model) {
+        var isUpdated = taskService.update(task);
+        if (!isUpdated) {
+            model.addAttribute("message", "Задача с указанным идентификатором не найдена");
+            return "errors/404";
+        }
+        return "redirect:/tasks";
     }
 
     @GetMapping("/delete/{id}")
