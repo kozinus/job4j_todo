@@ -67,10 +67,11 @@ public class TaskStore {
         boolean flag = false;
         try {
             session.beginTransaction();
-            flag = session.createQuery("update Task set done = true where id = :Id")
+            session.createQuery("update Task set done = true where id = :Id")
                     .setParameter("Id", id)
-                    .executeUpdate() > 0;
+                    .executeUpdate();
             session.getTransaction().commit();
+            flag = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {

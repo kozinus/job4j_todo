@@ -55,7 +55,10 @@ public class TaskController {
 
     @GetMapping("/makedone/{id}")
     public String makeDone(Model model, @PathVariable int id) {
-        taskService.makeDone(id);
+        if (!taskService.makeDone(id)) {
+            model.addAttribute("message", "Задача с указанным идентификатором не найдена");
+            return "errors/404";
+        }
         return getAll(model);
     }
 
