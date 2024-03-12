@@ -17,8 +17,13 @@ public class UserStore {
     private final CrudStore crudStore;
 
     public Optional<User> save(User user) {
-        crudStore.run(session -> session.persist(user));
-        return Optional.of(user);
+        try {
+            crudStore.run(session -> session.persist(user));
+            return Optional.of(user);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), user);
+        }
+        return Optional.empty();
     }
 
     public Optional<User> findByEmailAndPassword(String email, String password) {
