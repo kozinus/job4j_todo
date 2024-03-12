@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.TaskService;
 
 @Controller
@@ -37,7 +38,8 @@ public class TaskController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Task task, Model model) {
+    public String create(@ModelAttribute Task task, @SessionAttribute User user, Model model) {
+        task.setUser(user);
         taskService.save(task);
         return "redirect:/tasks";
     }
@@ -69,12 +71,15 @@ public class TaskController {
             model.addAttribute("message", "Задача с указанным идентификатором не найдена");
             return "errors/404";
         }
-        model.addAttribute("task", taskOptional.get());
+        Task task = taskOptional.get();
+        model.addAttribute("task", task);
+        model.addAttribute("user", task.getUser());
         return "tasks/edit";
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute Task task, Model model) {
+    public String update(@ModelAttribute Task task, @ModelAttribute User user,  Model model) {
+        task.setUser(user);
         var isUpdated = taskService.update(task);
         if (!isUpdated) {
             model.addAttribute("message", "Задача с указанным идентификатором не найдена");
