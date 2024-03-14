@@ -20,6 +20,7 @@
 
       <div class="col-9" th:object="${task}">
         <h1><strong th:text="*{title}"></strong></h1>
+        <h1><strong th:text="*{priority.name}"></strong></h1>
         <div><strong th:text="*{description}"></strong></div>
       </div>
       <div class="mb-3 row">
