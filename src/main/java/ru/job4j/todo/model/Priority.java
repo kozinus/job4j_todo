@@ -18,10 +18,4 @@ public class Priority {
     private String name;
 
     private int position;
-
-    @Override
-    public String toString() {
-        return String.format("Priority(id=%d, name=%s, position=%d)",
-                id, name, position);
-    }
 }

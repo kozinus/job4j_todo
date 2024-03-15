@@ -83,8 +83,7 @@ public class TaskController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute Task task, @ModelAttribute User user,  Model model) {
-        task.setUser(user);
+    public String update(@ModelAttribute Task task,  Model model) {
         var isUpdated = taskService.update(task);
         if (!isUpdated) {
             model.addAttribute("message", "Задача с указанным идентификатором не найдена");
