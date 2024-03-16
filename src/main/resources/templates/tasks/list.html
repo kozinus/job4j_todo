@@ -36,6 +36,7 @@
                     <th scope="col">Имя</th>
                     <th scope="col">Дата создания</th>
                     <th scope="col">Имя создателя</th>
+                    <th scope="col">Категории</th>
                     <th scope="col">Приоритет</th>
                 </tr>
                 </thead>
@@ -53,6 +54,11 @@
                     <td><a th:text="${task.title}" th:href="@{/tasks/{taskId}(taskId=${task.id})}"></a></td>
                     <td th:text="${task.created}"></td>
                     <td th:text="${task.user.name}"></td>
+                    <td>
+                        <div colCount=${1} class="row">
+                            <div class="span3" th:each="data : ${task.participates}" th:text="${data.name}"></div>
+                        </div>
+                    </td>
                     <td th:text="${task.priority.name}"></td>
                 </tr>
                 </tbody>

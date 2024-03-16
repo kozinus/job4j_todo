@@ -52,20 +52,20 @@ public class TaskStore {
     }
 
     public List<Task> findAll() {
-        return crudStore.query("from Task t JOIN FETCH t.priority order by t.id asc", Task.class);
+        return crudStore.query("from Task t JOIN FETCH t.priority left JOIN FETCH t.participates order by t.id asc", Task.class);
     }
 
     public List<Task> findAllDone() {
-        return crudStore.query("from Task t JOIN FETCH t.priority where t.done = true order by t.id asc", Task.class);
+        return crudStore.query("from Task t JOIN FETCH t.priority cross JOIN FETCH t.participates where t.done = true order by t.id asc", Task.class);
     }
 
     public List<Task> findAllNew() {
-        return crudStore.query("from Task t JOIN FETCH t.priority where t.created > :now order by t.id asc", Task.class,
+        return crudStore.query("from Task t JOIN FETCH t.priority cross JOIN FETCH t.participates where t.created > :now order by t.id asc", Task.class,
                 Map.of("now", LocalDateTime.now().withNano(0).withSecond(0).minusMinutes(3)));
     }
 
     public Optional<Task> findById(int id) {
-        return crudStore.optional("from Task t JOIN FETCH t.priority where t.id = :Id", Task.class,
+        return crudStore.optional("from Task t JOIN FETCH t.priority JOIN FETCH t.participates where t.id = :Id", Task.class,
                 Map.of("Id", id));
     }
 }

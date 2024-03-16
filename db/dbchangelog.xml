@@ -9,4 +9,7 @@
     <include file="scripts/002_ddl_create_users_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/003_ddl_alter_tasks_table.sql" relativeToChangelogFile="true"/>
     <include file="scripts/004_ddl_create_table_priorities.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/005_ddl_create_categories_table.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/006_ddl_create_table_participates.sql" relativeToChangelogFile="true"/>
+    <include file="scripts/007_dml_insert_table_categories.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

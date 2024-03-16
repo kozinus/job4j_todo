@@ -4,10 +4,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/tasks")
@@ -17,9 +22,11 @@ public class TaskController {
 
     private final PriorityService priorityService;
 
+    private final CategoryService categoryService;
+
     @GetMapping
     public String getAll(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
+        model.addAttribute("tasks", taskService.findAll().stream().distinct().collect(Collectors.toList()));
         return "tasks/list";
     }
 
@@ -38,12 +45,14 @@ public class TaskController {
     @GetMapping("/create")
     public String getCreationPage(Model model) {
         model.addAttribute("priorities", priorityService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         return "tasks/create";
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Task task, @SessionAttribute User user, Model model) {
+    public String create(@ModelAttribute Task task, @SessionAttribute User user, @RequestParam List<Integer> categoriesId, Model model) {
         task.setUser(user);
+        task.setParticipates(categoryService.findCategoriesByIds(categoriesId).stream().toList());
         taskService.save(task);
         return "redirect:/tasks";
     }
@@ -77,13 +86,14 @@ public class TaskController {
         }
         Task task = taskOptional.get();
         model.addAttribute("task", task);
-        model.addAttribute("user", task.getUser());
         model.addAttribute("priorities", priorityService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         return "tasks/edit";
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute Task task,  Model model) {
+    public String update(@ModelAttribute Task task, @RequestParam List<Integer> categoriesId, Model model) {
+        task.setParticipates(categoryService.findCategoriesByIds(categoriesId).stream().toList());
         var isUpdated = taskService.update(task);
         if (!isUpdated) {
             model.addAttribute("message", "Задача с указанным идентификатором не найдена");

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class CrudStore {
     public <T> List<T> query(String query, Class<T> cl) {
         Function<Session, List<T>> command = session -> session
                 .createQuery(query, cl)
+                .setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false)
                 .list();
         return tx(command);
     }
@@ -63,7 +65,7 @@ public class CrudStore {
             for (Map.Entry<String, Object> arg : args.entrySet()) {
                 sq.setParameter(arg.getKey(), arg.getValue());
             }
-            return sq.list();
+            return sq.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false).list();
         };
         return tx(command);
     }
