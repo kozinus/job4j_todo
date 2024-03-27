@@ -10,6 +10,7 @@ import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 
+import java.time.ZoneId;
 import java.util.List;
 
 @Controller
@@ -23,20 +24,32 @@ public class TaskController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public String getAll(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
+    public String getAll(Model model, @SessionAttribute User user) {
+        model.addAttribute("tasks", taskService.findAll().stream()
+                .peek(x -> {
+                    x.setCreated(x.getCreated().atZone(ZoneId.of("UTC"))
+                            .withZoneSameInstant(ZoneId.of(user.getTimezone())).toLocalDateTime());
+                }).toList());
         return "tasks/list";
     }
 
     @GetMapping("/done")
-    public String getDone(Model model) {
-        model.addAttribute("tasks", taskService.findAllDone());
+    public String getDone(Model model, @SessionAttribute User user) {
+        model.addAttribute("tasks", taskService.findAllDone().stream()
+                .peek(x -> {
+                    x.setCreated(x.getCreated().atZone(ZoneId.of("UTC"))
+                            .withZoneSameInstant(ZoneId.of(user.getTimezone())).toLocalDateTime());
+                }).toList());
         return "tasks/list";
     }
 
     @GetMapping("/new")
-    public String getNew(Model model) {
-        model.addAttribute("tasks", taskService.findAllNew());
+    public String getNew(Model model, @SessionAttribute User user) {
+        model.addAttribute("tasks", taskService.findAllNew().stream()
+                .peek(x -> {
+                    x.setCreated(x.getCreated().atZone(ZoneId.of("UTC"))
+                            .withZoneSameInstant(ZoneId.of(user.getTimezone())).toLocalDateTime());
+                }).toList());
         return "tasks/list";
     }
 
@@ -67,12 +80,12 @@ public class TaskController {
     }
 
     @GetMapping("/makedone/{id}")
-    public String makeDone(Model model, @PathVariable int id) {
+    public String makeDone(Model model, @SessionAttribute User user, @PathVariable int id) {
         if (!taskService.makeDone(id)) {
             model.addAttribute("message", "Задача с указанным идентификатором не найдена");
             return "errors/404";
         }
-        return getAll(model);
+        return getAll(model, user);
     }
 
     @GetMapping("/edit/{id}")

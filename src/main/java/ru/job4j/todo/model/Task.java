@@ -1,10 +1,10 @@
 package ru.job4j.todo.model;
 
 import lombok.*;
-import org.hibernate.engine.profile.Fetch;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,8 @@ public class Task {
     @NonNull
     private String description;
 
-    private LocalDateTime created = LocalDateTime.now().withSecond(0).withNano(0);
+    private LocalDateTime created = LocalDateTime.now().atZone(ZoneId.of("UTC"))
+            .toLocalDateTime().withNano(0).withSecond(0);
 
     private boolean done = false;
 
