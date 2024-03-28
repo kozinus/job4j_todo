@@ -24,11 +24,11 @@ import java.util.TimeZone;
 public class UserController {
     private final UserService userService;
 
-    private final List<String> timezones = new ArrayList<>(Arrays.asList(TimeZone.getAvailableIDs()));
+    private static final List<String> TIMEZONES = new ArrayList<>(Arrays.asList(TimeZone.getAvailableIDs()));
 
     @GetMapping("/register")
     public String getRegistrationPage(Model model) {
-        model.addAttribute("zones", timezones);
+        model.addAttribute("zones", TIMEZONES);
         return "users/register";
     }
 

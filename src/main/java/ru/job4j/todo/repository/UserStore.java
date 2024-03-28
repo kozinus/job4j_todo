@@ -16,12 +16,12 @@ public class UserStore {
 
     private final CrudStore crudStore;
 
-    private final String defTz = TimeZone.getDefault().getID();
+    private static final String DEFTZ = TimeZone.getDefault().getID();
 
     public Optional<User> save(User user) {
         try {
             if (user.getTimezone() == null) {
-                user.setTimezone(defTz);
+                user.setTimezone(DEFTZ);
             }
             crudStore.run(session -> session.persist(user));
             return Optional.of(user);
